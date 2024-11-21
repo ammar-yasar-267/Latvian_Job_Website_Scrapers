@@ -1,7 +1,12 @@
+import os
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import csv
 import time
+
+# Create the output directory
+output_folder = os.path.join(os.path.dirname(__file__), "../outputs")  # Adjust the relative path if needed
+os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
 
 # Initialize the WebDriver (ensure the driver is in PATH or provide the executable path)
 driver = webdriver.Chrome()
@@ -13,14 +18,20 @@ driver.get(url)
 # Allow the page to load
 time.sleep(5)
 
-cookie_button = driver.find_element(By.ID, "onetrust-reject-all-handler")
-cookie_button.click()
+# Handle cookies
+try:
+    cookie_button = driver.find_element(By.ID, "onetrust-reject-all-handler")
+    cookie_button.click()
+except Exception as e:
+    print(f"Cookie button not found or could not be clicked: {e}")
 
 # Locate all job articles
 job_articles = driver.find_elements(By.CSS_SELECTOR, "article.article-grid")
 
+# Define the CSV file path in the new folder
+csv_file = os.path.join(output_folder, "drogas_jobs.csv")
+
 # Open a CSV file to save the data
-csv_file = "drogas_jobs.csv"
 with open(csv_file, mode="w", newline="", encoding="utf-8-sig") as file:
     writer = csv.writer(file)
     # Write the header row

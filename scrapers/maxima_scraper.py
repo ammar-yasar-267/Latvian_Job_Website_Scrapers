@@ -1,8 +1,13 @@
+import os
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import pandas as pd
+
+# Create the output directory
+output_folder = os.path.join(os.path.dirname(__file__), "../outputs")  # Adjust the relative path if needed
+os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
 
 # Initialize the WebDriver
 driver = webdriver.Chrome()  # Or specify the path if needed
@@ -32,10 +37,13 @@ for job in soup.select("#jobs_list_container li"):
         full_url = f"{url}"  # Complete the URL
         jobs_list.append({"Job Title": title, "URL": full_url})
 
-# Save to a CSV file
+# Define the CSV file path in the new folder
+csv_file = os.path.join(output_folder, "maxima_jobs.csv")
+
+# Save to a CSV file in the new folder
 df = pd.DataFrame(jobs_list)
-df.to_csv("maxima_jobs.csv", index=False)
-print("Job data has been saved to maxima_jobs.csv")
+df.to_csv(csv_file, index=False, header=["Job Title", "URL"])
+print(f"Job data has been saved to {csv_file}")
 
 # Close the WebDriver
 driver.quit()

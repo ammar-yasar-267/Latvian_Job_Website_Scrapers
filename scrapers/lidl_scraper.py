@@ -1,9 +1,12 @@
+import os
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-import csv
 import time
+
+# Create the output directory
+output_folder = os.path.join(os.path.dirname(__file__), "../outputs")  # Adjust the relative path if needed
+os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
 
 # Initialize the WebDriver
 driver = webdriver.Chrome()  # Ensure you have the ChromeDriver installed
@@ -14,20 +17,24 @@ driver.get("https://karjera.lidl.lv/meklet-darbu")  # Replace with the actual UR
 # Allow the page to load fully
 time.sleep(3)
 
-cookie_button = driver.find_element(By.ID, "onetrust-accept-btn-handler")
-cookie_button.click()
+# Handle cookie popup
+try:
+    cookie_button = driver.find_element(By.ID, "onetrust-accept-btn-handler")
+    cookie_button.click()
+except Exception as e:
+    print(f"Cookie button not found or could not be clicked: {e}")
 
 # Find all job cards
 job_cards = driver.find_elements(By.CLASS_NAME, "jobResult")
 
+# Define the CSV file path in the new folder
+csv_file = os.path.join(output_folder, "lidl_scraper.csv")
+
 # Open a CSV file for writing
-with open("lidl_scraper.csv", mode="w", newline="", encoding="utf-8") as file:
+with open(csv_file, mode="w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
     # Write the header row
     writer.writerow(["Job Title", "Location", "URL"])
-
-    # Find all job cards
-    job_cards = driver.find_elements(By.CLASS_NAME, "jobResult")
 
     for card in job_cards:
         try:
@@ -64,3 +71,5 @@ with open("lidl_scraper.csv", mode="w", newline="", encoding="utf-8") as file:
 
 # Close the WebDriver
 driver.quit()
+
+print(f"Scraping complete. Data saved to {csv_file}")

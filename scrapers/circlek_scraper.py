@@ -1,7 +1,8 @@
+import os
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-import pandas as pd
 from datetime import datetime, timedelta
 import time
 
@@ -19,6 +20,10 @@ def convert_relative_date(relative_date):
         return (today - timedelta(days=days_ago)).strftime('%Y-%m-%d')
     else:
         return relative_date  # Return as is if it's already a date or unknown format
+
+# Create the output directory
+output_folder = os.path.join(os.path.dirname(__file__), "../outputs")  # Adjust the relative path if needed
+os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
 
 # Set up the WebDriver
 driver = webdriver.Chrome()
@@ -76,11 +81,12 @@ while True:
     except NoSuchElementException:
         break  # Exit loop if no "Next" button is found
 
-# Save jobs to CSV
+# Save jobs to CSV in the new folder
+csv_file = os.path.join(output_folder, 'circlek_jobs.csv')
 df = pd.DataFrame(jobs)
-df.to_csv('circlek_jobs_all_pages.csv', index=False, encoding='utf-8')
+df.to_csv(csv_file, index=False, encoding='utf-8')
 
-print('Job listings from all pages have been saved to circlek_jobs_all_pages.csv')
+print(f'Job listings from all pages have been saved to {csv_file}')
 
 # Close the WebDriver
 driver.quit()

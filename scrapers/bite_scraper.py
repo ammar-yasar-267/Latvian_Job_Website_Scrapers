@@ -1,7 +1,12 @@
+import os
 import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+
+# Create the output directory
+output_folder = os.path.join(os.path.dirname(__file__), "../outputs")  # Adjust the relative path if needed
+os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
 
 # Initialize the WebDriver
 driver = webdriver.Chrome()  # Ensure you have the ChromeDriver installed
@@ -12,8 +17,8 @@ driver.get("https://karjera.bite.lv/jobs")  # Replace with the actual URL
 # Allow the page to load fully
 time.sleep(3)
 
-# Prepare the CSV file
-csv_file = "bite_job_listings.csv"
+# Prepare the CSV file in the new folder
+csv_file = os.path.join(output_folder, "bite_jobs.csv")
 with open(csv_file, mode="w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
     # Write the header
